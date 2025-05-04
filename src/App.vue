@@ -1,65 +1,40 @@
 <script>
-import { useUserStore } from '@/stores/user.js'
+import ATMInterface from '@/components/ATMInterface.vue'
 
 export default {
+  name: 'App',
+  components: { ATMInterface },
   data() {
     return {
-      drawer: false,
-      items: [
-        {
-          title: 'Home',
-          subtitle: 'Home',
-          icon: 'mdi-home',
-          link: '/'
-        }
-      ]
-    }
-  },
-  mounted() {
-    this.userStore = useUserStore()
+      screenMessage: 'Welcome! Please select an option.'
+    };
   },
   methods: {
-    async getUser() {
-      await this.userStore.fetchUser()
+    onAtmButtonClick(id) {
+      this.screenMessage = `You pressed: ${id}`;
     }
   }
-}
+};
 </script>
 
 <template>
-  <v-card>
-    <v-layout>
-      <v-app-bar color="primary">
-        <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-
-        <v-toolbar-title>Bank App</v-toolbar-title>
-
-        <template v-if="$vuetify.display.mdAndUp">
-          <v-btn icon="mdi-magnify" variant="text"></v-btn>
-
-          <v-btn icon="mdi-filter" variant="text"></v-btn>
+  <v-app>
+    <v-main class="d-flex justify-center pa-8">
+      <ATMInterface @button-click="onAtmButtonClick">
+        <template #screen>
+          <div class="atm-screen-content">
+            {{ screenMessage }}
+          </div>
         </template>
-
-        <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
-      </v-app-bar>
-
-      <v-navigation-drawer
-        v-model="drawer"
-        :location="$vuetify.display.mobile ? 'bottom' : undefined"
-        temporary
-      >
-        <v-list>
-          <v-list-item :to="item.link" :title="item.title" :prepend-icon="item.icon" :subtitle="item.subtitle"
-                       v-for="item in items" :key="item.id">
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-
-      <v-main>
-        <RouterView></RouterView>
-      </v-main>
-    </v-layout>
-  </v-card>
+      </ATMInterface>
+    </v-main>
+  </v-app>
 </template>
-<style scoped>
+
+<style>
+.atm-screen-content {
+  font-size: 1.1rem;
+  text-align: center;
+  width: 100%;
+}
 </style>
