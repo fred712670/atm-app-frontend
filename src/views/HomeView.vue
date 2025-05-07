@@ -1,67 +1,84 @@
 <template>
-  <!-- full-screen dark wrapper -->
-  <div class="atm-page">
-    <ATMInterface
-      :buttons="buttons"
-      :screenRegion="screenRegion"
-      @button-click="onAtmButtonClick"
-    >
-      <template #screen>
-        <div class="atm-screen-content">
-          {{ screenMessage }}
+    <div class="atm-interface">
+        <img :src="atmImage" alt="ATM" class="atm-bg" />
+
+        <!-- screen region -->
+        <div
+            class="screen-region"
+            :style="{
+        top: screenRegion.topPct + '%',
+        left: screenRegion.leftPct + '%',
+        width: screenRegion.widthPct + '%',
+        height: screenRegion.heightPct + '%'      }
+      "
+        >
+            <slot name="screen" />
         </div>
-      </template>
-    </ATMInterface>
-  </div>
+
+        <!-- side buttons -->
+        <button
+            v-for="btn in buttons"
+            :key="btn.id"
+            class="atm-button"
+            :style="{ top: btn.topPct + '%', left: btn.leftPct + '%' }"
+            @click="$emit('button-click', btn.id)"
+            aria-label="ATM Button"
+        />
+    </div>
 </template>
 
-<script>
-import ATMInterface from '@/components/ATMInterface.vue'
+<script setup>
+import { defineProps } from 'vue'
+import atmImage from '@/assets/img/atm.png'
 
-export default {
-  name: 'HomeView',
-  components: { ATMInterface },
-  data() {
-    return {
-      screenMessage: 'Welcome! Please select an option.',
-      buttons: [
-        { id: 'left1',  topPct: 35, leftPct: 15 },
-        { id: 'left2',  topPct: 45, leftPct: 15 },
-        { id: 'left3',  topPct: 55, leftPct: 15 },
-        { id: 'left4',  topPct: 65, leftPct: 15 },
-        { id: 'right1', topPct: 35, leftPct: 85 },
-        { id: 'right2', topPct: 45, leftPct: 85 },
-        { id: 'right3', topPct: 55, leftPct: 85 },
-        { id: 'right4', topPct: 65, leftPct: 85 }
-      ],
-      screenRegion: {
-        topPct:    22,
-        leftPct:   25,
-        widthPct:  50,
-        heightPct: 38
-      }
+const props = defineProps({
+    buttons: {
+        type: Array,
+        default: () => []
+    },
+    screenRegion: {
+        type: Object,
+        default: () => ({ topPct: 0, leftPct: 0, widthPct: 100, heightPct: 100 })
     }
-  },
-  methods: {
-    onAtmButtonClick(id) {
-      this.screenMessage = `You pressed: ${id}`
-    }
-  }
-}
+})
 </script>
 
 <style scoped>
-.atm-page {
-  background: #121212;     /* dark page background */
-  min-height: 100vh;       /* fill viewport vertically */
-  display: flex;
-  justify-content: center; /* center ATM horizontally */
-  align-items: center;     /* center ATM vertically */
+.atm-interface {
+    position: relative;
+    width: 800px;
+    height: 850px;
+    user-select: none;
+}
+.atm-bg {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
-.atm-screen-content {
-  font-size: 1.1rem;
-  text-align: center;
-  width: 100%;
+.screen-region {
+    position: absolute;
+    pointer-events: none; /* pass clicks through if needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.atm-button {
+    position: absolute;
+    width: 50%;    /* adjust to approx button size */
+    height: 50%;   /* adjust as needed */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.screen-region {
+    outline: 2px dashed red;    /* shows the screen slot */
+}
+
+.atm-button {
+    outline: 1px solid blue;    /* shows each button hotspot */
 }
 </style>
